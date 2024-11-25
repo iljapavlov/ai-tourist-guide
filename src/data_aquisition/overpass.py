@@ -105,10 +105,11 @@ def filter_pois_near_path(pois: list, path: LineString, max_distance: float) -> 
     return filtered_pois
 
 
-def get_pois_near_path(path: LineString, tags: list, buffer_distance: float = 20, max_distance: float = 20) -> list:
+def get_pois_near_path(path: LineString, buffer_distance: float = 20, max_distance: float = 20) -> list:
     """
     Combines the steps to retrieve and filter POIs near the path.
     """
+    tags = ["historic", "tourism"]
 
     # fit circle around the path bbox
     bbox = path_processing.get_bounding_box(path)
