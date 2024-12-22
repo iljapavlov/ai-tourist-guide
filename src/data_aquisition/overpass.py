@@ -9,6 +9,20 @@ METERS_TO_DEGRESS = 1 / DEGRESS_TO_METERS
 
 import src.processing.path_processing as path_processing
 
+tags = [
+"historic", "monument", "memorial", "castle", "ruins", "archaeological_site", "heritage", 
+"museum", "artwork", "theatre", "gallery", "monastery", "church", "temple", "statue", 
+"fountain", "tomb", "synagogue", "mosque", "building", "skyscraper", "house", "manor", 
+"palace", "lighthouse", "gateway", "arch", "clock_tower", "square", "park", "garden", 
+"zoo", "stadium", "arena", "shrine", "chapel", "pilgrimage", "street_art", "memorial_wall", 
+"tunnel", "cave", "tourism"
+]
+
+# Split the tags into smaller chunks
+def chunk_tags(tags, chunk_size):
+    for i in range(0, len(tags), chunk_size):
+        yield tags[i:i + chunk_size]
+
 def create_overpass_query(center_lat, center_lon, tags: list, radius: int) -> str:
     """
     Creates an Overpass API query to retrieve POIs based on bounding box and tags.
@@ -32,6 +46,9 @@ def fetch_pois_from_overpass(query: str) -> dict:
     overpass_url = "http://overpass-api.de/api/interpreter"
     response = requests.get(overpass_url, params={'data': query})
     return response.json()
+
+def get_node_info():
+    pass
 
 def fetch_node_coordinates(node_ids: List[int]) -> dict:
     """
@@ -109,7 +126,6 @@ def get_pois_near_path(path: LineString, buffer_distance: float = 20, max_distan
     """
     Combines the steps to retrieve and filter POIs near the path.
     """
-    tags = ["historic", "tourism"]
 
     # fit circle around the path bbox
     bbox = path_processing.get_bounding_box(path)
@@ -124,15 +140,16 @@ def get_pois_near_path(path: LineString, buffer_distance: float = 20, max_distan
     
     bbox_width = expanded_bbox[2] - expanded_bbox[0]
     bbox_height = expanded_bbox[3] - expanded_bbox[1]
-    radius = math.sqrt(bbox_width ** 2 + bbox_height ** 2)
+    radius = math.sqrt((bbox_width/2) ** 2 + (bbox_height/2) ** 2)
     max_distance = max_distance*METERS_TO_DEGRESS
 
-    # get Overpass API query
-    query = create_overpass_query(center_lat, center_lon, tags, radius)
-    # get all objects in the circle
-    pois_data = fetch_pois_from_overpass(query)
+    all_pois = []
 
-    # filter objects based on proximity to the path
-    filtered_pois = filter_pois_near_path(pois_data['elements'], path, max_distance)
+    for tag_chunk in chunk_tags(tags, 5):
+        query = create_overpass_query(center_lat, center_lon, tag_chunk, radius)
+        pois_data = fetch_pois_from_overpass(query)
+        pois_data = filter_pois_near_path(pois_data['elements'], path, max_distance)
+        
+        all_pois.extend(pois_data)
     
-    return filtered_pois
+    return all_pois

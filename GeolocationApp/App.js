@@ -39,7 +39,12 @@ const App = () => {
 
   const [isSimulating, setIsSimulating] = useState(false); // Track simulation state
   const [simulationIndex, setSimulationIndex] = useState(0); // Index for simulated location
+  const [completedLandmarks, setCompletedLandmarks] = useState(new Set());
 
+  const [isRouteActive, setIsRouteActive] = useState(false);
+
+  const [currentNarration, setCurrentNarration] = useState(null);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(true);
 
   const getLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -78,22 +83,43 @@ const App = () => {
     };
   }, [selectedRoute]);
 
-  const checkLandmarkProximity = (location) => {
-    const { latitude, longitude } = location;
+  const skipCurrentNarration = async () => {
+    // Stop current audio
+    const sound = new Audio.Sound();
+    await sound.stopAsync();
+    await sound.unloadAsync();
+  
+    // Move to next narration
+    playNextNarration();
+  };
 
+  const checkLandmarkProximity = (location) => {
+    if (!isRouteActive) return;
+
+    const { latitude, longitude } = location;
+  
     selectedRoute.landmarks.forEach((landmark, index) => {
       const distance = getDistance(
         { latitude, longitude },
         { latitude: landmark.lat, longitude: landmark.lon }
       );
-
+  
       if (distance <= 50 && !triggeredLandmarks.has(landmark.name)) {
         console.log('triggering', landmark.name);
         
         setTriggeredLandmarks((prev) => new Set(prev).add(landmark.name)); // Mark landmark as triggered
         enqueueNarration(index + 1);  // landmark.index starts from 1
+        console.log('queue', narrationQueue)
       }
     });
+  
+    // Check if all landmarks have been triggered to add outro
+    if (
+      triggeredLandmarks.size === selectedRoute.landmarks.length && 
+      !narrationQueue.current.includes('outro')
+    ) {
+      narrationQueue.current.push('outro');
+    }
   };
 
   const getDistance = (loc1, loc2) => {
@@ -112,22 +138,32 @@ const App = () => {
 
   const enqueueNarration = async (landmarkIndex) => {
     let narrationFiles = [];
-
-    // Add intro file
-    narrationFiles.push('intro');
+  
+    // Only add intro on first landmark trigger
+    if (narrationQueue.current.length === 0) {
+      narrationFiles.push('intro');
+    }
     
     // Add landmark narration based on the landmark index
     if (landmarkIndex > 0) {
       const landmarkFile = `m${landmarkIndex}`;
-      narrationFiles.push(landmarkFile);
+      
+      // Check if this landmark is already in the queue or being narrated
+      const isAlreadyQueued = narrationQueue.current.includes(landmarkFile);
+      const currentNarration = isNarrating.current 
+        ? narrationQueue.current[0] 
+        : null;
+      const isCurrentlyNarrating = currentNarration === landmarkFile;
+        console.log('current narration', currentNarration)
+      // Only add if not already queued or narrating
+      if (!isAlreadyQueued && !isCurrentlyNarrating) {
+        narrationFiles.push(landmarkFile);
+      }
     }
-
-    // Add outro file
-    narrationFiles.push('outro');
-
-    // Add all files to the queue
+  
+    // Add files to the queue
     narrationQueue.current.push(...narrationFiles);
-
+  
     // If no narration is ongoing, start the first narration
     if (!isNarrating.current) {
       playNextNarration();
@@ -139,12 +175,13 @@ const App = () => {
       isNarrating.current = false;
       return;
     }
-
+  
     isNarrating.current = true;
-    const narrationFile = narrationQueue.current.shift(); // Get next narration file
-
-    console.log('Playing narration:', narrationFile); // Log which file is playing
-
+    const narrationFile = narrationQueue.current.shift(); 
+  
+    console.log('Playing narration:', narrationFile);
+    console.log('Remaining queue:', narrationQueue.current);
+  
     // Load and play the audio file
     const sound = new Audio.Sound();
     try {
@@ -155,10 +192,10 @@ const App = () => {
         playNextNarration(); // Skip to next file if not found
         return;
       }
-
+  
       await sound.loadAsync(fileToPlay);
       await sound.playAsync();
-
+  
       // After playback completes, proceed to the next file in the queue
       sound.setOnPlaybackStatusUpdate((status) => {
         if (status.didJustFinish) {
@@ -270,17 +307,19 @@ const App = () => {
             {/* Landmarks as Circles */}
             {selectedRoute.landmarks.map((landmark, index) => (
                 <Circle
-                key={`landmark-${index}`}
-                center={{
+                    key={`landmark-${index}`}
+                    center={{
                     latitude: landmark.lat,
                     longitude: landmark.lon,
-                }}
-                radius={50} // Adjust radius for circle size
-                strokeColor="orange"
-                fillColor="rgba(255, 165, 0, 0.5)" // Semi-transparent fill
-                zIndex={999} // Ensure circles are on top of other map layers
+                    }}
+                    radius={50}
+                    strokeColor={triggeredLandmarks.has(landmark.name) ? "gray" : "orange"}
+                    fillColor={triggeredLandmarks.has(landmark.name) 
+                    ? "rgba(128, 128, 128, 0.5)" 
+                    : "rgba(255, 165, 0, 0.5)"}
+                    zIndex={999}
                 />
-            ))}
+                ))}
           </>
         )}
 
@@ -308,6 +347,52 @@ const App = () => {
         </Text>
       </TouchableOpacity>
 
+        {/* stop / start route */}
+      <TouchableOpacity
+        style={styles.routeToggleButton}
+        onPress={() => setIsRouteActive(!isRouteActive)}
+        >
+        <Text style={styles.routeToggleButtonText}>
+            {isRouteActive ? 'Stop Route' : 'Start Route'}
+        </Text>
+        </TouchableOpacity>
+
+        {/* Player */}
+        {currentNarration && (
+            <View style={styles.audioPlayerContainer}>
+                <Text style={styles.audioPlayerText}>
+                {/* Map narration file to landmark name */}
+                {currentNarration === 'intro' 
+                    ? 'Route Introduction' 
+                    : currentNarration === 'outro'
+                    ? 'Route Conclusion'
+                    : selectedRoute.landmarks[parseInt(currentNarration.slice(1)) - 1]?.name
+                }
+                </Text>
+                <TouchableOpacity 
+                    onPress={async () => {
+                        const soundStatus = await sound.getStatusAsync();
+                        if (soundStatus.isPlaying) {
+                        await sound.pauseAsync();
+                        setIsAudioPlaying(false);
+                        } else {
+                        await sound.playAsync();
+                        setIsAudioPlaying(true);
+                        }
+                    }}
+                    >
+                <Ionicons 
+                    name={isAudioPlaying ? "pause" : "play"} 
+                    size={24} 
+                    color="white" 
+                />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={skipCurrentNarration}>
+                    <Ionicons name="skip-forward" size={24} color="white" />
+                </TouchableOpacity>
+            </View>
+            )}
+
       {/* Popup Menu */}
       <Modal
         transparent={true}
@@ -316,28 +401,72 @@ const App = () => {
         onRequestClose={() => setMenuVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.menu}>
+            <View style={styles.menu}>
             <TouchableOpacity style={styles.closeButton} onPress={() => setMenuVisible(false)}>
-              <Ionicons name="close" size={30} color="black" />
+                <Ionicons name="close" size={30} color="black" />
             </TouchableOpacity>
 
-            {/* Route selection */}
-            <Text style={styles.menuHeader}>Select a Route</Text>
-            <FlatList
-              data={routes}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.menuItem}
-                  onPress={() => handleRouteSelect(item)}
-                >
-                  <Text style={styles.menuItemText}>{item.name}</Text>
-                </TouchableOpacity>
-              )}
-              keyExtractor={(item, index) => index.toString()}
-            />
-          </View>
+            {selectedRoute ? (
+                <>
+                <Text style={styles.menuHeader}>
+                    {selectedRoute.name} Landmarks
+                </Text>
+                <FlatList
+                    data={selectedRoute.landmarks}
+                    renderItem={({ item, index }) => (
+                    <TouchableOpacity
+                        style={styles.menuItem}
+                        onPress={() => {
+                        // Only allow manual landmark selection when route is paused 
+                        // and not simulating
+                        if (!isRouteActive && !isSimulating) {
+                            // Stop current narration if any
+                            if (isNarrating.current) {
+                            sound.stopAsync();
+                            sound.unloadAsync();
+                            }
+                            
+                            // Clear existing queue and add this landmark
+                            narrationQueue.current = [];
+                            enqueueNarration(index + 1);
+                        }
+                        }}
+                        disabled={isRouteActive || isSimulating}
+                    >
+                        <Text 
+                        style={[
+                            styles.menuItemText,
+                            triggeredLandmarks.has(item.name) && styles.completedLandmark,
+                            (isRouteActive || isSimulating) && styles.disabledLandmark
+                        ]}
+                        >
+                        {item.name}
+                        </Text>
+                    </TouchableOpacity>
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+                </>
+            ) : (
+                <>
+                    <Text style={styles.menuHeader}>Select a Route First</Text>
+                    <FlatList
+                        data={routes}
+                        renderItem={({ item }) => (
+                            <TouchableOpacity
+                            style={styles.menuItem}
+                            onPress={() => handleRouteSelect(item)}
+                            >
+                            <Text style={styles.menuItemText}>{item.name}</Text>
+                            </TouchableOpacity>
+                        )}
+                        keyExtractor={(item, index) => index.toString()}
+                    />
+                </>
+            )}
+            </View>
         </View>
-      </Modal>
+    </Modal>
     </View>
   );
 };
@@ -364,7 +493,7 @@ const styles = StyleSheet.create({
   },
   simulateButton: {
     position: 'absolute',
-    bottom: 20,
+    top: 40,
     right: 20,
     backgroundColor: 'green',
     padding: 15,
@@ -398,6 +527,44 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   menuItemText: { fontSize: 16 },
+  audioPlayerContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 25,
+  },
+  audioPlayerText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  routeToggleButton: {
+    position: 'absolute',
+    bottom: 140,
+    right: 20,
+    backgroundColor: 'blue',
+    padding: 15,
+    borderRadius: 10,
+  },
+  skipNarrationButton: {
+    position: 'absolute',
+    bottom: 200,
+    right: 20,
+    backgroundColor: 'red',
+    padding: 15,
+    borderRadius: 10,
+  },
+  completedLandmark: {
+    color: 'gray',
+    textDecorationLine: 'line-through',
+  },
+  disabledLandmark: {
+    color: '#cccccc',
+  },
 });
 
 export default App;

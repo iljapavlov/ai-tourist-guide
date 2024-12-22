@@ -1,0 +1,218 @@
+[
+    {
+        "name": "test_route",
+        "coords": [
+            {
+                "latitude": 56.95127343261212,
+                "longitude": 24.1130101820019
+            },
+            {
+                "latitude": 56.94995900302226,
+                "longitude": 24.11100944922449
+            },
+            {
+                "latitude": 56.95116022126007,
+                "longitude": 24.10884904203446
+            },
+            {
+                "latitude": 56.95139473073723,
+                "longitude": 24.10887817231877
+            },
+            {
+                "latitude": 56.9515286612378,
+                "longitude": 24.10639896104437
+            },
+            {
+                "latitude": 56.95134180820844,
+                "longitude": 24.10637282926913
+            },
+            {
+                "latitude": 56.95135179140665,
+                "longitude": 24.10537005559199
+            },
+            {
+                "latitude": 56.95101251216798,
+                "longitude": 24.10533375339251
+            },
+            {
+                "latitude": 56.95100852205802,
+                "longitude": 24.10420819009744
+            },
+            {
+                "latitude": 56.95044857959932,
+                "longitude": 24.10422551597725
+            },
+            {
+                "latitude": 56.95046777856432,
+                "longitude": 24.10533363880363
+            },
+            {
+                "latitude": 56.94970378951188,
+                "longitude": 24.10542622213175
+            },
+            {
+                "latitude": 56.94955270589622,
+                "longitude": 24.10521726335901
+            },
+            {
+                "latitude": 56.94929047505967,
+                "longitude": 24.10582112157042
+            },
+            {
+                "latitude": 56.94878005259982,
+                "longitude": 24.10579661700958
+            },
+            {
+                "latitude": 56.94849191903335,
+                "longitude": 24.10531714141353
+            },
+            {
+                "latitude": 56.94800217403484,
+                "longitude": 24.10498530014101
+            },
+            {
+                "latitude": 56.94779612059929,
+                "longitude": 24.10566812792916
+            },
+            {
+                "latitude": 56.94740358689546,
+                "longitude": 24.10613314004885
+            },
+            {
+                "latitude": 56.94746577920456,
+                "longitude": 24.10628699054634
+            },
+            {
+                "latitude": 56.94734238315959,
+                "longitude": 24.10652482519255
+            },
+            {
+                "latitude": 56.94746308750059,
+                "longitude": 24.10703010220712
+            },
+            {
+                "latitude": 56.94741157300989,
+                "longitude": 24.10720079852305
+            },
+            {
+                "latitude": 56.94752132185353,
+                "longitude": 24.10759636623553
+            },
+            {
+                "latitude": 56.94728759067998,
+                "longitude": 24.10786823747501
+            },
+            {
+                "latitude": 56.94744711060012,
+                "longitude": 24.10843579383996
+            }
+        ],
+        "landmarks": [
+            {
+                "text": "Reform\u0101cijas Laukums 1, Centra rajons, R\u012bga, LV-1050, Latvia very interesting...",
+                "name": "St.Peter's Church",
+                "address": "Reform\u0101cijas Laukums 1, Centra rajons, R\u012bga, LV-1050, Latvia",
+                "lat": 56.94746133244,
+                "lon": 24.108570051958857
+            },
+            {
+                "text": "R\u0101tslaukums, Centra rajons, R\u012bga, 1050, LV-1050, Latvia very interesting...",
+                "name": "Town Hall Square",
+                "address": "R\u0101tslaukums, Centra rajons, R\u012bga, 1050, LV-1050, Latvia",
+                "lat": 56.947398445811395,
+                "lon": 24.106729485462097
+            },
+            {
+                "text": "Jauniela, Riga, LV-1050, Latvia very interesting...",
+                "name": "Jauniela",
+                "address": "Jauniela, Riga, LV-1050, Latvia",
+                "lat": 56.94803215998902,
+                "lon": 24.105005308792453
+            },
+            {
+                "text": "Jauniela 20, Centra rajons, R\u012bga, LV-1050, Latvia very interesting...",
+                "name": "Jauniela 20",
+                "address": "Jauniela 20, Centra rajons, R\u012bga, LV-1050, Latvia",
+                "lat": 56.948618673061226,
+                "lon": 24.105411448969782
+            },
+            {
+                "text": "Central District, Riga, LV-1050, Latvia very interesting...",
+                "name": "Dome square",
+                "address": "Central District, Riga, LV-1050, Latvia",
+                "lat": 56.949523728701806,
+                "lon": 24.10517953317153
+            },
+            {
+                "text": "Jekaba iela, Riga, LV-1050, Latvia very interesting...",
+                "name": "Jekaba iela",
+                "address": "Jekaba iela, Riga, LV-1050, Latvia",
+                "lat": 56.950067869939375,
+                "lon": 24.10540100336487
+            },
+            {
+                "text": "Maz\u0101 Pils iela 19, Centra rajons, R\u012bga, LV-1050, Latvia very interesting...",
+                "name": "Three Brothers, Latvian Museum of Architecture",
+                "address": "Maz\u0101 Pils iela 19, Centra rajons, R\u012bga, LV-1050, Latvia",
+                "lat": 56.950344083094855,
+                "lon": 24.104283584044413
+            },
+            {
+                "text": "J\u0113kaba iela 9, Centra rajons, R\u012bga, LV-1050, Latvia very interesting...",
+                "name": "St. Jacob\u2019s Catholic Cathedral of Riga",
+                "address": "J\u0113kaba iela 9, Centra rajons, R\u012bga, LV-1050, Latvia",
+                "lat": 56.95084252944608,
+                "lon": 24.104293530343114
+            },
+            {
+                "text": "J\u0113kaba iela 11, Centra rajons, R\u012bga, LV-1050, Latvia very interesting...",
+                "name": "Latvian Parlament",
+                "address": "J\u0113kaba iela 11, Centra rajons, R\u012bga, LV-1050, Latvia",
+                "lat": 56.95121767911694,
+                "lon": 24.104772293737867
+            },
+            {
+                "text": "Troksnu iela, Central District, Riga, LV-1050, Latvia very interesting...",
+                "name": "Troksnu iela",
+                "address": "Troksnu iela, Central District, Riga, LV-1050, Latvia",
+                "lat": 56.951349680827654,
+                "lon": 24.10546289061118
+            },
+            {
+                "text": "Tor\u0146a iela 4-1a, Centra rajons, R\u012bga, LV-1050, Latvia very interesting...",
+                "name": "Zviedru v\u0101rti",
+                "address": "Tor\u0146a iela 4-1a, Centra rajons, R\u012bga, LV-1050, Latvia",
+                "lat": 56.95141948034045,
+                "lon": 24.10634881860949
+            },
+            {
+                "text": "Torna iela, Central District, Riga, LV-1050, Latvia very interesting...",
+                "name": "Rigas nocietinajumi",
+                "address": "Torna iela, Central District, Riga, LV-1050, Latvia",
+                "lat": 56.95141919929648,
+                "lon": 24.107126435387432
+            },
+            {
+                "text": "Smil\u0161u iela 20, Centra rajons, R\u012bga, LV-1050, Latvia very interesting...",
+                "name": "Powder tower",
+                "address": "Smil\u0161u iela 20, Centra rajons, R\u012bga, LV-1050, Latvia",
+                "lat": 56.951240627518374,
+                "lon": 24.108658882959514
+            },
+            {
+                "text": "Ka\u013c\u0137u iela 28, Centra rajons, R\u012bga, LV-1050, Latvia very interesting...",
+                "name": "Baltic way footstep",
+                "address": "Ka\u013c\u0137u iela 28, Centra rajons, R\u012bga, LV-1050, Latvia",
+                "lat": 56.95019521869818,
+                "lon": 24.111259622762237
+            },
+            {
+                "text": "Br\u012bv\u012bbas piemineklis very interesting...",
+                "name": "The freedom monument",
+                "address": "Br\u012bv\u012bbas piemineklis",
+                "lat": 56.951552635684,
+                "lon": 24.11335193636825
+            }
+        ]
+    }
+]
